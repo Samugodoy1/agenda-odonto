@@ -319,7 +319,7 @@ def register_routes(app):
         else:
             data_filtro = date.today()
     
-        agendamentos = Agendamento.query.filter_by(data=data_filtro).all()
+        agendamentos = Agendamento.query.filter_by(data_consulta=data_filtro).all()
         form = AgendamentoForm()  # <-- esta linha é o que evita o erro no template
         return render_template(
             'agendamentos/lista.html',
