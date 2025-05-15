@@ -13,6 +13,7 @@ from app.forms import (LoginForm, UsuarioForm, PacienteForm, EvolucaoForm, Agend
                       FormularioPreConsultaForm, PreenchimentoFormularioForm, BuscaPacienteForm,
                       RadiografiaForm, FormularioPrimeiraConsultaForm)
 from app.notifications import send_formulario_email, send_lembrete_consulta_sms
+from app.forms import AgendamentoForm
 
 # Configuração para uploads de arquivos
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static/uploads/radiografias')
@@ -317,6 +318,15 @@ def register_routes(app):
                 data_filtro = date.today()
         else:
             data_filtro = date.today()
+    
+        agendamentos = Agendamento.query.filter_by(data=data_filtro).all()
+        form = AgendamentoForm()  # <-- esta linha é o que evita o erro no template
+        return render_template(
+            'agendamentos/lista.html',
+            agendamentos=agendamentos,
+            data_filtro=data_filtro,
+            form=form
+        )
         
         # Get appointments for the selected date
         agendamentos = Agendamento.query.filter(
