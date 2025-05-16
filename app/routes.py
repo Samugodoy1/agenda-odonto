@@ -311,24 +311,24 @@ def register_routes(app):
     @login_required
     def listar_agendamentos():
         data_filtro = request.args.get('data')
-        try:
-            if data_filtro:
+        if data_filtro:
+            try:
                 data_filtro = datetime.strptime(data_filtro, '%Y-%m-%d').date()
-            else:
+            except ValueError:
                 data_filtro = date.today()
+        else:
+            data_filtro = date.today()
     
-            agendamentos = Agendamento.query.filter_by(data_consulta=data_filtro).all()
-            form = AgendamentoForm()
-            return render_template(
-                'agendamentos/lista.html',
-                agendamentos=agendamentos,
-                data_filtro=data_filtro,
-                form=form
-            )
-        except Exception as e:
-            # Log do erro no console
-            app.logger.error(f"Erro ao listar agendamentos: {e}", exc_info=True)
-            return "Erro interno ao listar agendamentos", 500
+        agendamentos = Agendamento.query.filter_by(data_consulta=data_filtro).all()
+        form = AgendamentoForm()  # <-- esta linha evita o erro no template
+    
+        return render_template(
+            'agendamentos/lista.html',
+            agendamentos=agendamentos,
+            data_filtro=data_filtro,
+            data_atual=data_filtro,  # Passa aqui também
+            form=form
+        )
         
         # Get appointments for the selected date
         agendamentos = Agendamento.query.filter(
